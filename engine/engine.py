@@ -1,7 +1,9 @@
 from engine.inconsistency_checker import InconsistencyChecker
 from engine.model import Model
 from sympy.logic import boolalg
-from structs.statements import Causes, Releases, Statement, EffectStatement, Triggers
+from sympy.core.symbol import Symbol
+from sympy.logic.boolalg import BooleanFalse, Or, Not
+from structs.statements import Causes, Releases, Statement, EffectStatement, Triggers, ImpossibleIf
 from structs.action_occurrence import ActionOccurrence
 from typing import List, Dict, Optional
 from copy import deepcopy
@@ -64,9 +66,11 @@ class Engine:
             print('in Model.run(): InconsistencyChecker claims scenario and/or domain description is invalid')
             return False
         # Create initial model which corresponds to the initial state
-        initial_model = Model(self.checker.valid_scenario)
+        fluents = self.get_all_fluents(self.checker.domain_desc)
+        initial_condition = self.create_initial_condition(self.checker.valid_scenario, fluents)
+        initial_model = Model(self.checker.valid_scenario, fluents, initial_condition)
         # We may have more than 1 initial model
-        self.models += self.fork_model(initial_model, self.checker.sorted_observations[0].condition.formula, 0, 0)
+        self.models += self.fork_model(initial_model, initial_condition, 0, 0)
         self.models = self.checker.remove_duplicate_models(self.models)
         # i = 0
         # for m in self.models:
@@ -155,3 +159,30 @@ class Engine:
                     if evaluation:
                         # model.triggered_actions = {time: ActionOccurrence(statement.action, time, statement.agent, 1)}
                         model.triggered_actions = {time: ActionOccurrence(statement.action, time, 'nobody', 1)}
+
+    def get_all_fluents(self, domain_description: DomainDescription):
+        fluents = []
+        for statement in domain_description.statements:
+            if isinstance(statement, EffectStatement):
+                fluents = list(set(fluents) | set(statement.effect.formula.atoms()))
+                if statement.condition is not True:
+                    fluents = list(set(fluents) | set(statement.condition.formula.atoms()))
+            if isinstance(statement, Triggers) or isinstance(statement, ImpossibleIf):
+                if statement.condition.formula is not True:
+                    fluents = list(set(fluents) | set(statement.condition.formula.atoms()))
+        return fluents
+
+    def create_initial_condition(self, scenario: Scenario, fluents: List[Symbol]):
+        initial_statement = BooleanFalse
+        if len(scenario.observations) != 0 and scenario.observations[0].begin_time == 0:
+            initial_statement = scenario.observations[0].condition.formula
+            not_used_fluents = list(set(fluents) - set(scenario.observations[0].condition.formula.atoms()))
+            for fluent in not_used_fluents:
+                initial_statement = Or(initial_statement, Or(fluent, Not(fluent)))
+        else:
+            for fluent in fluents:
+                if initial_statement is BooleanFalse:
+                    initial_statement = Or(fluent, Not(fluent))
+                else:
+                    initial_statement = Or(initial_statement, Or(fluent, Not(fluent)))
+        return initial_statement
