@@ -81,3 +81,14 @@ $ ./main.py -l lib.txt -s scenario.txt -q queries.txt
 ```
 python3.6 -m unittest
 ```
+
+## Building a self-contained executable on Windows
+
+Adjust the absolute path in `gui.spec`
+to match the repository's location on your machine, then:
+
+```
+pip install pyinstaller
+pyinstaller -F -y gui.spec
+cp dist/gui/gui.exe exec/gui.exe
+```
