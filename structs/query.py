@@ -12,6 +12,16 @@ class QueryType(Enum):
     POSSIBLY = 2
 
 
+def evaluate_possible_query(evaluations: List[bool]) -> bool:
+    print("Evaluations: ", evaluations)
+    return any(x is True for x in evaluations)
+
+
+def evaluate_necessary_query(evaluations: List[bool]) -> bool:
+    print("Evaluations: ", evaluations)
+    return all(x is True for x in evaluations)
+
+
 class Query:
     # To be overridden
     def validate(self, models: List[Model], scen: Scenario = None) -> bool:
@@ -129,17 +139,9 @@ class ConditionQuery(Query):
             expr, expr_values = models[i].get_symbol_values(self.time_point)
             evaluations.append(InconsistencyChecker.evaluate(expr, expr_values, self.condition.formula))
         if self.query_type == QueryType.POSSIBLY:
-            return self.evaluate_possible_query(evaluations)
+            return evaluate_possible_query(evaluations)
         else:
-            return self.evaluate_necessary_query(evaluations)
-
-    def evaluate_possible_query(self, evaluations: List[bool]) -> bool:
-        print("Evaluations: ", evaluations)
-        return any(x!=False for x in evaluations)
-
-    def evaluate_necessary_query(self, evaluations: List[bool]) -> bool:
-        print("Evaluations: ", evaluations)
-        return all(x==True for x in evaluations)
+            return evaluate_necessary_query(evaluations)
 
     def __str__(self):
         return self.str
@@ -152,22 +154,22 @@ class InvolvedQuery(Query):
         self.str = "{} involved {} ".format(self.query_type, self.agent)
 
     def validate(self,  models: List[Model], scen: Scenario = None) -> bool:
-        if len(models) == 0:
+        if len(models) == 0 and self.query_type == QueryType.NECESSARY:
             # If no models then agent surely was not involved?
             return True
-
+        evals = []
         for model in models:
             agent_involved_in_model = False
             for action in model.action_history.values():
-                if action.agent == self.agent and self.query_type == QueryType.POSSIBLY:
-                    return True
-                elif action.agent == self.agent:
+                if action.agent == self.agent:
                     agent_involved_in_model = True
                     break
-            if not agent_involved_in_model and self.query_type == QueryType.NECESSARY:
-                return False
+            evals.append(agent_involved_in_model)
 
-        return True
+        if self.query_type == QueryType.NECESSARY:
+            return evaluate_necessary_query(evals)
+        else:
+            return evaluate_possible_query(evals)
 
     def __str__(self):
         return self.str

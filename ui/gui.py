@@ -78,6 +78,7 @@ class StdRedirector(object):
         self.text_space.config(state=tk.DISABLED)
 
 
-root = tk.Tk()
-gui = Gui(master=root)
-gui.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    gui = Gui(master=root)
+    gui.mainloop()
