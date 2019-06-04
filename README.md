@@ -2,11 +2,11 @@
 
 ## Authors
 
-- Witaut Bajaryn: Design documentation; Parsing the domain description and scenarios.
-- Jakub Karaszkiewicz: Design documentation; examples and counter-examples; bug fixing.
+- Witaut Bajaryn: Design documentation; Examples; Testing the GUI; Bug fixing.
 - Filip Matracki: Design documentation; The engine; model consistency validation; query parsing and execution.
 - Ivan Matyazh: Design documentation; Testing the engine and preprocessor implementation; bug fixing.
-- Fardeen Mohammed: Design documentation; Data structures and the GUI.
+- Weijia Yin: Verifying the documentation; Testing against the examples; Domain description validation.
+- Enggar Dwi Prihastomo: Testing; bug fixing.
 
 ## Example GUI usage
 
