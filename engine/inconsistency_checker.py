@@ -14,6 +14,7 @@ from sympy import Symbol
 from structs.condition import Condition
 from collections import defaultdict
 
+
 class InconsistencyChecker:
     def __init__(self, domain_desc: DomainDescription, scen: Scenario):
         self.is_consistent = True
@@ -230,12 +231,12 @@ class InconsistencyChecker:
         for statement in self.joined_statements[action.name]:
             if statement.action == action.name and action.begin_time + statement.duration == time and statement.agent == action.agent:
                 evaluation = None
-                current_action = action
+
                 if statement.duration <= action.duration:  # Use only statements which duration can be filled in the action occurence
                     if expr is None or expr_values is None:
                         # We found an ActionOccurrence, let's get the symbol values in the model at the time it occurred
                         # So we can evaluate action preconditions against them
-                        expr, expr_values = model.get_symbol_values(current_action.begin_time)
+                        expr, expr_values = model.get_symbol_values(action.begin_time)
                     if isinstance(statement.condition, bool):
                         # By default EffectStatements have a bool value for condition, this if statement handles that
                         evaluation = statement.condition
@@ -262,7 +263,7 @@ class InconsistencyChecker:
                             current_statements['releases'] = self.create_tautology_from_statements(
                                 current_statements['releases'], statement)
 
-        if current_action is None:
+        if action is None:
             # If no action is affecting us now, assume model is valid
             # Action is executed with empty effect because no agent can execute it
             return True, None, None, err_str
@@ -297,17 +298,17 @@ class InconsistencyChecker:
         """
 
         # Check ImpossibleBy/ImpossibleIf
-        if self.action_impossible_if(current_action, expr, expr_values):
-            err_str = "Impossible if holds at time {} Action: {} Fluents: {} Values: {}".format(t, current_action.name, expr, expr_values)
+        if self.action_impossible_if(action, expr, expr_values):
+            err_str = "Impossible if holds at time {} Action: {} Fluents: {} Values: {}".format(t, action.name, expr, expr_values)
             return False, None, None, err_str
-        elif self.action_impossible_by(current_action):
-            err_str = "Impossible by holds at time {} Action: {} Agent: {}".format(t, current_action.name, current_action.agent)
+        elif self.action_impossible_by(action):
+            err_str = "Impossible by holds at time {} Action: {} Agent: {}".format(t, action.name, action.agent)
             return False, None, None, err_str
-        elif not satisfiable(statement_to_be_executed.effect.formula):
-            err_str = "Formula not satisfiable {} Action: {} Agent: {} Formula: {}".format(t, current_action.name,
-                                                                                   current_action.agent, statement_to_be_executed.effect.formula)
+        elif statement_to_be_executed is not None and satisfiable(statement_to_be_executed.effect.formula):
+            err_str = "Formula not satisfiable {} Action: {} Agent: {} Formula: {}".format(t, action.name,
+                                                                                           action.agent, statement_to_be_executed.effect.formula)
 
-        return True, current_action, statement_to_be_executed, err_str
+        return True, action, statement_to_be_executed, err_str
 
     def remove_bad_observations(self, models: List[Model], time: int):
         """

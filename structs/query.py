@@ -13,12 +13,12 @@ class QueryType(Enum):
 
 
 def evaluate_possible_query(evaluations: List[bool]) -> bool:
-    print("Evaluations: ", evaluations)
+    # print("Evaluations: ", evaluations)
     return any(x is True for x in evaluations)
 
 
 def evaluate_necessary_query(evaluations: List[bool]) -> bool:
-    print("Evaluations: ", evaluations)
+    # print("Evaluations: ", evaluations)
     return all(x is True for x in evaluations)
 
 
@@ -38,7 +38,7 @@ class ActionQuery(Query):
         self.str = "{} {} at {}".format(query_type, self.action_strings[0], str(begin_time))
 
     def validate(self, models: List[Model], scen: Scenario = None) -> bool:
-        if len(models) == 0:
+        if len(models) == 0 and self.query_type == QueryType.NECESSARY:
             return True
 
         #scenario_act_names = [act.name.lower() for act in scen.action_occurrences]
@@ -131,7 +131,7 @@ class ConditionQuery(Query):
         self.str = self.str = "{} {} at {} when {}".format(self.query_type, str(self.condition), self.time_point, scenario)
 
     def validate(self,  models: List[Model], scen: Scenario = None) -> bool:
-        if len(models) == 0:
+        if len(models) == 0 and self.query_type == QueryType.NECESSARY:
             return True
 
         evaluations = []
