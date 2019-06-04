@@ -1,3 +1,4 @@
+import sys
 import tkinter as tk
 import parsing.scenario, parsing.domain_description, parsing.query
 from engine.engine import Engine
