@@ -1,4 +1,6 @@
-# ADL3
+# AS3
+
+This project implements the Agent Language AS3.
 
 ## Authors
 
