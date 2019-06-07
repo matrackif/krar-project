@@ -1,0 +1,5 @@
+OBS:
+0 a
+5 ~a
+ACS:
+fire nobody 3
