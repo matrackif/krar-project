@@ -1,0 +1,6 @@
+OBS:
+0 alive & ~loaded & ~hidden & ~can_escape
+ACS:
+load hunter 1
+escape turkey 2
+shoot hunter 3
