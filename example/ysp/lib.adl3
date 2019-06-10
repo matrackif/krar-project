@@ -1,5 +1,6 @@
-load causes loaded by hunter
+load causes loaded & can_escape by hunter
 shoot causes ~loaded by hunter
 shoot causes ~alive if loaded & ~hidden by hunter
-escape releases hidden by turkey
-loaded triggers escape by turkey
+can_escape triggers escape
+escape causes ~can_escape by nobody
+escape releases hidden by nobody

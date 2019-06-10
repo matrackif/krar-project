@@ -1,5 +1,5 @@
 OBS:
-0 alive & ~loaded & ~hidden
+0 alive & ~loaded & ~hidden & ~can_escape
 ACS:
 load hunter 1
 shoot hunter 3
