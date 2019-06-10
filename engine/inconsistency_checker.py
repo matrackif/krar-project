@@ -212,18 +212,17 @@ class InconsistencyChecker:
         expr_values = None
         action_src = None
         err_str = "No error"
-        action_times = self.actions_at_time_t.keys()
-        triggered_action_times = None if model.triggered_actions is None else model.triggered_actions.keys()
         t = time - 1
-        action_from_acs_executed_now = t in action_times
-        triggered_action_executed_now = False if triggered_action_times is None else t in triggered_action_times
+        action_from_acs_executed_now = self.actions_at_time_t.get(t)
+        triggered_action_executed_now = None if model.triggered_actions is None else model.triggered_actions.get(t)
 
-        if action_from_acs_executed_now and triggered_action_executed_now:
-            err_str = "Model is invalid because 2 actions are executed at time: {}\n{} {}".format(t,
-                                                                                                  self.actions_at_time_t[
-                                                                                                      t],
-                                                                                                  model.triggered_actions[
-                                                                                                      t])
+        if self.same_occurrence_different_agent(action_from_acs_executed_now, triggered_action_executed_now):
+            action_src = self.actions_at_time_t
+        elif action_from_acs_executed_now and triggered_action_executed_now:
+            err_str = "Model is invalid because 2 different actions are executed at time: {}\n{} {}".format(
+                t,
+                self.actions_at_time_t[t],
+                model.triggered_actions[t])
             return False, None, None, err_str
         elif action_from_acs_executed_now:
             action_src = self.actions_at_time_t
@@ -315,6 +314,13 @@ class InconsistencyChecker:
                                                                                            action.agent, statement_to_be_executed.effect.formula)
 
         return True, action, statement_to_be_executed, err_str
+
+    def same_occurrence_different_agent(self, a: ActionOccurrence, b: ActionOccurrence) -> bool:
+        return (a is not None and
+                b is not None and
+                a.name == b.name and
+                a.begin_time == b.begin_time and
+                a.duration == b.duration)
 
     def remove_bad_observations(self, models: List[Model], time: int):
         """
