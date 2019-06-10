@@ -11,7 +11,7 @@ class Gui(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        self.master.title("ADL3 Action Language with Durations")
+        self.master.title("AS3 Action Language with Agents")
         self.master.geometry("800x800")
 
         self.scenario_label = tk.Label(self, text="Input Scenario").pack()
