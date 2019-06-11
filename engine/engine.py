@@ -2,7 +2,7 @@ from engine.inconsistency_checker import InconsistencyChecker
 from engine.model import Model
 from sympy.logic import boolalg
 from sympy.core.symbol import Symbol
-from sympy.logic.boolalg import BooleanFalse, Or, Not
+from sympy.logic.boolalg import BooleanFalse, Or, Not, And
 from structs.statements import Causes, Releases, Statement, EffectStatement, Triggers, ImpossibleIf
 from structs.action_occurrence import ActionOccurrence
 from typing import List, Dict, Optional
@@ -178,7 +178,7 @@ class Engine:
             initial_statement = scenario.observations[0].condition.formula
             not_used_fluents = list(set(fluents) - set(scenario.observations[0].condition.formula.atoms()))
             for fluent in not_used_fluents:
-                initial_statement = Or(initial_statement, Or(fluent, Not(fluent)))
+                initial_statement = Or(And(initial_statement, fluent), And(initial_statement, Not(fluent)))
         else:
             for fluent in fluents:
                 if initial_statement is BooleanFalse:
