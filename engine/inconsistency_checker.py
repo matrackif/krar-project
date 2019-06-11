@@ -38,12 +38,12 @@ class InconsistencyChecker:
         self.impossible_by_statements = []  # List[ImpossibleBy]
         # ImpossibleAt statements
         self.action_time_constraints_at_time_t = dict()  # Maps time: int -> List[str] (List of action names not executable at t)
-        last_action_timepoint = 2
-        last_observation_timepoint = 2
+        last_action_timepoint = 6
+        last_observation_timepoint = 6
         if len(self.sorted_actions) != 0:
-            last_action_timepoint = self.sorted_actions[-1].begin_time + self.sorted_actions[-1].duration + 2
+            last_action_timepoint = self.sorted_actions[-1].begin_time + self.sorted_actions[-1].duration + 6
         if len(self.sorted_observations) != 0:
-            last_observation_timepoint = self.sorted_observations[-1].begin_time + 2
+            last_observation_timepoint = self.sorted_observations[-1].begin_time + 6
         self.last_time = max(last_action_timepoint, last_observation_timepoint)
         self.joined_statements = dict()  # Stores the joined releases/causes statements that have same name, time, and duration
         self.initialize_data()
