@@ -90,5 +90,5 @@ to match the repository's location on your machine, then:
 ```
 pip install pyinstaller
 pyinstaller -F -y gui.spec
-cp dist/gui/gui.exe exec/gui.exe
+cp dist/gui.exe exec/gui.exe
 ```
