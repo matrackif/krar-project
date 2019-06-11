@@ -20,13 +20,13 @@ class Model:
         # self.consistent = False  # still to be checked later on
         acs = sorted(scenario.action_occurrences, key=lambda action: action.begin_time)
         obs = sorted(scenario.observations, key=lambda observation: observation.begin_time)
-        # add +1 for trigger statement to occur and +1 due to 0 starting point
-        last_action_timepoint = 2
-        last_observation_timepoint = 2
+        # add +5 for trigger statement to occur and +1 due to 0 starting point
+        last_action_timepoint = 6
+        last_observation_timepoint = 6
         if len(acs) != 0:
-            last_action_timepoint = acs[-1].begin_time +  acs[-1].duration + 2
+            last_action_timepoint = acs[-1].begin_time +  acs[-1].duration + 6
         if len(obs) != 0:
-            last_observation_timepoint = obs[-1].begin_time + 2
+            last_observation_timepoint = obs[-1].begin_time + 6
         self.last_time_point = max(last_action_timepoint, last_observation_timepoint)
         self.fluent_history = self.initialize_history(initial_condition)
         self.action_history = dict()
